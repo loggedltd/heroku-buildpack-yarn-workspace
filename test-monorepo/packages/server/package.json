@@ -1,0 +1,10 @@
+{
+  "name": "server",
+  "scripts": {
+    "build": "echo 'Not really building'",
+    "start": "echo 'Not really starting'"
+  },
+  "engines": {
+    "node": "16"
+  }
+}
