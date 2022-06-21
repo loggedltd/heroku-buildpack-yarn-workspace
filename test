@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+
+set -e
+
+bin/detect $(pwd)/$1
+bin/compile $(pwd)/$1 cache $(pwd)/test-env-dir
