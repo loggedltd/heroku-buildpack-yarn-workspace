@@ -1,0 +1,16 @@
+#! /usr/bin/env bash
+
+BUILD_DIR=$1
+
+if [[ ! -f "$BUILD_DIR/package.json" ]]; then
+  echo "No package.json in root directory"
+  exit 1
+fi
+
+if [[ ! -f "$BUILD_DIR/yarn.lock" ]]; then
+  echo "No yarn.lock in root directory"
+  exit 1
+fi
+
+echo 'Using heroku-buildpack-yarn-workspace'
+exit 0
