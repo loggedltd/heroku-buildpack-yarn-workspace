@@ -28,7 +28,7 @@ if [[ ! -f $root_package_path ]]; then
 fi
 
 if [[ ! -f $package_path ]]; then
-  echo "No package.json found at $YARN_WORKSPACE_DIR: $yarn_workspace_dir"
+  echo "No package.json found at $ENV_VAR: $yarn_workspace_dir"
   exit 1
 fi
 
