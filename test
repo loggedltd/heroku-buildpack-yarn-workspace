@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+
+set -e
+
+bin/detect $(pwd)/test-monorepo
+bin/compile $(pwd)/test-monorepo cache $(pwd)/test-env-dir

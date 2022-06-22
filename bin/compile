@@ -1,0 +1,66 @@
+#! /usr/bin/env bash
+
+set -e
+
+# Heroku provided arguments
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+ENV_VAR="YARN2_WORKSPACE_PATH"
+ENV_VAR_LOCATION="$ENV_DIR/$ENV_VAR"
+BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
+PLATFORM=$(uname | tr A-Z a-z)
+PATH="$BP_DIR/vendor/$PLATFORM:$PATH"
+
+if [[ ! -f $ENV_VAR_LOCATION ]]; then
+  echo "No $ENV_VAR specified. Not using yarn workspace."
+  exit 1
+fi
+
+yarn_workspace_dir="$(cat $ENV_VAR_LOCATION)"
+root_package_path="$BUILD_DIR/package.json"
+package_path="$BUILD_DIR/$yarn_workspace_dir/package.json"
+
+if [[ ! -f $root_package_path ]]; then
+  echo "No package.json found in root dir"
+  exit 1
+fi
+
+if [[ ! -f $package_path ]]; then
+  echo "No package.json found at $ENV_VAR: $yarn_workspace_dir"
+  exit 1
+fi
+
+yarn_workspace_name="$(cat $package_path | jq -r '.name')"
+echo "Using workspace at $yarn_workspace_dir with name \"$yarn_workspace_name\""
+
+build_script=$(cat $package_path | jq '.scripts.build')
+start_script=$(cat $package_path | jq '.scripts.start')
+node_version=$(cat $package_path | jq '.engines.node')
+
+if [[ $node_version != "null" ]]; then
+  echo "Setting engines.node version in root package.json to $node_version"
+  root_package_updated=$(jq ".engines.node = $node_version" $root_package_path)
+  echo $root_package_updated > $root_package_path
+else
+  echo "No engines in workspace package.json, using existing root package.json engines"
+fi
+
+if [[ $build_script != "null" ]]; then
+  updated_script="yarn workspace $yarn_workspace_name run build"
+  echo "Setting build script in root package.json to \"$updated_script\""
+  root_package_updated=$(jq ".scripts.build = \"$updated_script\"" $root_package_path)
+  echo $root_package_updated > $root_package_path
+else
+  echo "No build script in workspace package.json, using existing root package.json build script"
+fi
+
+if [[ $start_script != "null" ]]; then
+  updated_script="yarn workspace $yarn_workspace_name run start"
+  echo "Setting start script in root package.json to \"$updated_script\""
+  root_package_updated=$(jq ".scripts.start = \"$updated_script\"" $root_package_path)
+  echo $root_package_updated > $root_package_path
+else
+  echo "No start script in workspace package.json, using existing root package.json start script"
+fi
