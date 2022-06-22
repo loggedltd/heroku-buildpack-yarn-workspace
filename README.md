@@ -4,10 +4,10 @@
 
 ## Usage
 
-Add a `YARN_WORKSPACE_PATH` environment variable that points to the directory of the workspace you want to build e.g.
+Add a `YARN2_WORKSPACE_PATH` environment variable that points to the directory of the workspace you want to build e.g.
 
 ```
-YARN_WORKSPACE_PATH="packages/server"
+YARN2_WORKSPACE_PATH="packages/server"
 ```
 
 ## Testing locally
